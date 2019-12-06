@@ -52,6 +52,8 @@ class Weapons(pygame.sprite.Sprite):
 ### Modules ###
 #When escape or the exit button is pressed, quit the game
 def quit_game():
+    clock = pygame.time.Clock()
+
     for event in pygame.event.get():
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
@@ -60,6 +62,8 @@ def quit_game():
         elif event.type == QUIT:
             running = False
             pygame.display.quit()
+
+    clock.tick(250)
 
 
 
@@ -95,7 +99,6 @@ def start_screen():
 
 
 
-
 #Loads and displays an image
 def img(w,h,x,y,file):
     image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+file)),(w,h))
@@ -105,10 +108,8 @@ def img(w,h,x,y,file):
 
 
 #The customisation screen with buttons which can be clicked to change the hat the user is wearing
-def custom_screen():
+def custom_screen(wearing):
     running = True
-
-
 
     #Loading images and background
     background()
@@ -140,13 +141,18 @@ def custom_screen():
             start_screen()
 
         #Hat 1
-        if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
-            pass
+        if 200+128>mouse[0]>200 and 145+128>mouse[1]>145 and click[0]==1:
+            wearing = "Hat-Tophat.png"
         #Hat 2
-
+        if 200+128>mouse[0]>200 and 400+128>mouse[1]>400 and click[0]==1:
+            wearing = "Hat-Fez.png"
         #Hat 3
-
+        if 872+128>mouse[0]>872 and 145+128>mouse[1]>145 and click[0]==1:
+            wearing = "Hat-Cowboy.png"
         #Hat 4
+        if 872+128>mouse[0]>872 and 400+128>mouse[1]>400 and click[0]==1:
+            wearing = "Hat-Party.png"
+
 
 
 #The highscores screen with a highscores table and a button to return to the start screen
@@ -154,10 +160,8 @@ def highscores_screen():
     running = True
     background()
 
-
     #Loading images
     button = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Button-Start.png")),(280,110))
-
 
     #Displaying images
     screen.blit(button, (460, 345))
@@ -207,8 +211,11 @@ player = Player()
 enemy = Enemy()
 weapons = Weapons()
 
+#Removing hats
+wearing = "Hat-Blank.png"
+
 #Running the game
-#game()
+game()
 #start_screen()
-custom_screen()
+#custom_screen(wearing)
 #highscores_screen()
