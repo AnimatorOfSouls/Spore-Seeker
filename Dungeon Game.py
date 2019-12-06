@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.surf = pygame.Surface((96,96))
         self.rect = self.surf.get_rect()
-        self.image = pygame.transform.scale(pygame.image.load("Sprites/Icon-Player.png"),(96,96))
+        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Icon-Player.png")),(96,96))
 
     def update(self, pressed_keys):
         #Movement keys (arrows/wasd)
@@ -65,7 +65,7 @@ def quit_game():
 
 #Changing the background
 def background():
-    background_img = pygame.image.load("Sprites/Background.png")
+    background_img = pygame.image.load(path.join(working_dir,"Sprites/Background.png"))
     screen.blit(background_img,(0,0))
 
 
@@ -73,7 +73,7 @@ def background():
 #Detects if button has been pressed, used for switching between pages
 def button_clicked():
     pass
-    
+
 
 
 #The start screen with buttons leading to different "pages"
@@ -81,16 +81,16 @@ def start_screen():
     running = True
     background()
 
-    
+
     #Loading images
-    button = pygame.transform.scale(pygame.image.load("Sprites/Button-Start.png"),(280,110))
+    button = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Button-Start.png")),(280,110))
 
 
     #Displaying images
     screen.blit(button, (460, 345))
     pygame.display.flip()
 
-    while running:    
+    while running:
         quit_game()
 
 
@@ -98,7 +98,7 @@ def start_screen():
 
 #Loads and displays an image
 def img(w,h,x,y,file):
-    image = pygame.transform.scale(pygame.image.load("Sprites/"+file),(w,h))
+    image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+file)),(w,h))
     screen.blit(image,(x,y))
     pygame.display.flip()
 
@@ -107,9 +107,9 @@ def img(w,h,x,y,file):
 #The customisation screen with buttons which can be clicked to change the hat the user is wearing
 def custom_screen():
     running = True
-    
 
-    
+
+
     #Loading images and background
     background()
 
@@ -122,9 +122,9 @@ def custom_screen():
     img(64,64,232,177,"Hat-Tophat.png")
     img(64,64,232,432,"Hat-Fez.png")
     img(64,64,904,177,"Hat-Cowboy.png")
-    img(64,64,904,432,"Hat-Party.png") 
+    img(64,64,904,432,"Hat-Party.png")
     pygame.display.flip()
-    
+
 
     # Running #
     while running:
@@ -143,31 +143,31 @@ def custom_screen():
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
             pass
         #Hat 2
-        
+
         #Hat 3
-        
+
         #Hat 4
 
-        
+
 #The highscores screen with a highscores table and a button to return to the start screen
 def highscores_screen():
     running = True
     background()
 
-    
+
     #Loading images
-    button = pygame.transform.scale(pygame.image.load("Sprites/Button-Start.png"),(280,110))
+    button = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Button-Start.png")),(280,110))
 
 
     #Displaying images
     screen.blit(button, (460, 345))
 
-    while running:   
+    while running:
         quit_game()
-        
 
 
-#The main game 
+
+#The main game
 def game():
     running = True
 
