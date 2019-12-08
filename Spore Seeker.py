@@ -293,7 +293,7 @@ def highscores_screen():
 
 #The main game
 def game():
-    screen.fill((0,0,0))
+    screen.fill((239,228,176))
 
     running = True
     points = 100                #Player starts with 100 points
