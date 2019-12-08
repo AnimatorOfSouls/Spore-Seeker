@@ -196,6 +196,9 @@ def start_screen():
     running = True
     background()
 
+    #Loading icon
+    img(512,512,180,140,"Game-Icon-Text.png")
+
     #Loading buttons - y+150 space between each button
     img(280,110,880,40,"Button-Start.png")     #Start button
     img(280,110,880,190,"Button-Custom.png")    #Customisation menu
