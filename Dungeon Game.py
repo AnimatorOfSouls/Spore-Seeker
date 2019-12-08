@@ -1,10 +1,13 @@
 import pygame
 from pygame.locals import *
 from os import path
+import random
 
 working_dir = path.dirname(__file__)
 
 ### CLASSES ###
+
+#Used for the player
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
@@ -39,17 +42,59 @@ class Player(pygame.sprite.Sprite):
 
 
 
-class Enemy(pygame.sprite.Sprite):
+#Enemies
+class Enemy:
+    def __init__(self,hp,damage,move,dist,img):
+        self.hp = hp
+        self.damage = damage
+        self.move = move
+        self.dist = dist
+        self.img = img
+
+    def load(self):
+        pygame.transform.scale(pygame.image.load(path.join(working_dir,self.img)),(64,64))
+
+    def health(self):
+        alive = True
+
+        if health <= 0:
+            alive = False
+
+
+
+class Question:
+    def __init__(self,text):
+        self.text = text
+
+    def load():
+        pass
+
+
+
+class Level:
+    def __init__(self,lvl,type):
+        self.lvl = lvl
+        self.type = type
+
+    def level_gen(self):
+        rand_num = random.randint(0,7)
+        if self.type == "enemy":
+            print("enemy")
+            #self.load()
+            enemy_img = enemies[rand_num].img
+            img(64,64,400,400,enemy_img)
+        else:
+            print("question")
+            question_text = questions[rand_num].text
+
+
+
+class Weapons:
     pass
 
 
 
-class Weapons(pygame.sprite.Sprite):
-    pass
-
-
-
-### Modules ###
+### Called Modules ###
 #When escape or the exit button is pressed, quit the game
 def quit_game():
     clock = pygame.time.Clock()
@@ -71,12 +116,6 @@ def quit_game():
 def background():
     background_img = pygame.image.load(path.join(working_dir,"Sprites/Background.png"))
     screen.blit(background_img,(0,0))
-
-
-
-#Detects if button has been pressed, used for switching between pages
-def button_clicked():
-    pass
 
 
 
@@ -107,6 +146,46 @@ def img(w,h,x,y,file):
 
 
 
+
+
+### OBJECTS ###
+## ENEMIES ##
+enemies = []
+
+#Horizontal enemies
+enemies.append(Enemy(50,5,"h",2,"Enemy-H1.png"))
+enemies.append(Enemy(75,5,"h",2,"Enemy-H2.png"))
+enemies.append(Enemy(100,20,"h",7,"Enemy-H3.png"))
+enemies.append(Enemy(125,30,"h",9,"Enemy-H4.png"))
+
+#Vertical Enemies
+enemies.append(Enemy(50,10,"v",2,"Enemy-V1.png"))
+enemies.append(Enemy(75,10,"v",3,"Enemy-V2.png"))
+enemies.append(Enemy(100,25,"v",8,"Enemy-V3.png"))
+enemies.append(Enemy(125,35,"v",10,"Enemy-V4.png"))
+
+
+
+## LEVELS ##
+levels = []
+
+#Enemies
+levels.append(Level(0,"enemy"))
+levels.append(Level(1,"enemy"))
+levels.append(Level(2,"enemy"))
+levels.append(Level(3,"enemy"))
+
+#Questions
+levels.append(Level(0,"question"))
+levels.append(Level(1,"question"))
+levels.append(Level(2,"question"))
+levels.append(Level(3,"question"))
+
+
+
+
+
+### Screens ###
 #The customisation screen with buttons which can be clicked to change the hat the user is wearing
 def custom_screen(wearing):
     running = True
@@ -175,6 +254,10 @@ def highscores_screen():
 def game():
     running = True
 
+    rand_num = random.randint(0,7)
+    levels[rand_num].level_gen()
+
+
     while running:
         quit_game()
 
@@ -185,6 +268,13 @@ def game():
         screen.blit(player.image, player.rect)
         pygame.display.flip()
 
+
+
+
+
+### Called Game Modules ###
+def weapons():
+    pass
 
 
 
@@ -208,14 +298,17 @@ pygame.display.set_caption("Dungeon Game")
 
 #Setting variables to reference the classes
 player = Player()
-enemy = Enemy()
 weapons = Weapons()
 
 #Removing hats
 wearing = "Hat-Blank.png"
 
-#Running the game
+
+
+## Running the game
 game()
 #start_screen()
 #custom_screen(wearing)
 #highscores_screen()
+
+#level_gen(levels)
