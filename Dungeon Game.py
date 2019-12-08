@@ -54,7 +54,7 @@ class Enemy:
     def load(self):
         pygame.transform.scale(pygame.image.load(path.join(working_dir,self.img)),(64,64))
 
-    def health(self):
+    def health(self,health):
         alive = True
 
         if health <= 0:
@@ -63,8 +63,9 @@ class Enemy:
 
 
 class Question:
-    def __init__(self,text):
-        self.text = text
+    def __init__(self,quest,ans):
+        self.quest = quest
+        self.ans = ans
 
     def load():
         pass
@@ -76,7 +77,7 @@ class Level:
         self.lvl = lvl
         self.type = type
 
-    def level_gen(self):
+    def level_gen(self,points):
         rand_num = random.randint(0,7)
         if self.type == "enemy":
             print("enemy")
@@ -85,7 +86,13 @@ class Level:
             img(64,64,400,400,enemy_img)
         else:
             print("question")
-            question_text = questions[rand_num].text
+            question = questions[rand_num].quest
+            answer = questions[rand_num].ans
+
+            img(280,110,220,500,"Button-True.png")
+            img(280,110,700,500,"Button-False.png")
+
+        return rand_num
 
 
 
@@ -119,25 +126,6 @@ def background():
 
 
 
-#The start screen with buttons leading to different "pages"
-def start_screen():
-    running = True
-    background()
-
-
-    #Loading images
-    button = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Button-Start.png")),(280,110))
-
-
-    #Displaying images
-    screen.blit(button, (460, 345))
-    pygame.display.flip()
-
-    while running:
-        quit_game()
-
-
-
 #Loads and displays an image
 def img(w,h,x,y,file):
     image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+file)),(w,h))
@@ -149,23 +137,6 @@ def img(w,h,x,y,file):
 
 
 ### OBJECTS ###
-## ENEMIES ##
-enemies = []
-
-#Horizontal enemies
-enemies.append(Enemy(50,5,"h",2,"Enemy-H1.png"))
-enemies.append(Enemy(75,5,"h",2,"Enemy-H2.png"))
-enemies.append(Enemy(100,20,"h",7,"Enemy-H3.png"))
-enemies.append(Enemy(125,30,"h",9,"Enemy-H4.png"))
-
-#Vertical Enemies
-enemies.append(Enemy(50,10,"v",2,"Enemy-V1.png"))
-enemies.append(Enemy(75,10,"v",3,"Enemy-V2.png"))
-enemies.append(Enemy(100,25,"v",8,"Enemy-V3.png"))
-enemies.append(Enemy(125,35,"v",10,"Enemy-V4.png"))
-
-
-
 ## LEVELS ##
 levels = []
 
@@ -183,9 +154,74 @@ levels.append(Level(3,"question"))
 
 
 
+## ENEMIES ##
+enemies = []
+
+#Horizontal enemies
+enemies.append(Enemy(50,5,"h",2,"Enemy-H1.png"))
+enemies.append(Enemy(75,5,"h",2,"Enemy-H2.png"))
+enemies.append(Enemy(100,20,"h",7,"Enemy-H3.png"))
+enemies.append(Enemy(125,30,"h",9,"Enemy-H4.png"))
+
+#Vertical Enemies
+enemies.append(Enemy(50,10,"v",2,"Enemy-V1.png"))
+enemies.append(Enemy(75,10,"v",3,"Enemy-V2.png"))
+enemies.append(Enemy(100,25,"v",8,"Enemy-V3.png"))
+enemies.append(Enemy(125,35,"v",10,"Enemy-V4.png"))
+
+
+
+## QUESTIONS ##
+questions = []
+
+#True answers
+questions.append(Question("",True))
+questions.append(Question("",True))
+questions.append(Question("",True))
+questions.append(Question("",True))
+
+#False answers
+questions.append(Question("",False))
+questions.append(Question("",False))
+questions.append(Question("",False))
+questions.append(Question("",False))
+
+
+
 
 
 ### Screens ###
+#The start screen with buttons leading to different "pages"
+def start_screen():
+    running = True
+    background()
+
+    #Loading buttons - y+150 space between each button
+    img(280,110,880,40,"Button-Start.png")     #Start button
+    img(280,110,880,190,"Button-Custom.png")    #Customisation menu
+    img(280,110,880,340,"Button-Scores.png")    #Highscores table
+
+
+    while running:
+        quit_game()
+
+        #Checking if a button is pressed, and then running what the button should do
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        #Start game
+        if 880+280>mouse[0]>880 and 40+110>mouse[1]>40 and click[0]==1:
+            game()
+        #Customisation menu
+        wearing = "Hat-Blank.png"   #Removing hats
+        if 880+280>mouse[0]>880 and 190+110>mouse[1]>190 and click[0]==1:
+            custom_screen(wearing)
+        #Highscores table
+        if 880+280>mouse[0]>880 and 340+110>mouse[1]>340 and click[0]==1:
+            highscores_screen()
+
+
+
 #The customisation screen with buttons which can be clicked to change the hat the user is wearing
 def custom_screen(wearing):
     running = True
@@ -209,7 +245,6 @@ def custom_screen(wearing):
     # Running #
     while running:
         quit_game()
-
 
         #Checking if a button is pressed, and then running what the button should do
         mouse = pygame.mouse.get_pos()
@@ -239,36 +274,76 @@ def highscores_screen():
     running = True
     background()
 
-    #Loading images
-    button = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Button-Start.png")),(280,110))
+    #Loading back button
+    img(280,110,460,600,"Button-Back.png")
 
-    #Displaying images
-    screen.blit(button, (460, 345))
 
     while running:
         quit_game()
+
+        #Checking if a button is pressed, and then running what the button should do
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        #Back button
+        if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
+            start_screen()
 
 
 
 #The main game
 def game():
+    screen.fill((0,0,0))
+
     running = True
+    points = 100                #Player starts with 100 points
 
     rand_num = random.randint(0,7)
-    levels[rand_num].level_gen()
+    question_num = levels[rand_num].level_gen(points)
 
 
     while running:
         quit_game()
 
-        pressed_keys = pygame.key.get_pressed()
-
-        player.update(pressed_keys)
-
-        screen.blit(player.image, player.rect)
-        pygame.display.flip()
+        #Checking if a button is pressed, and then running what the button should do
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
 
 
+        #Checking if the current level has an enemy or a question
+        #If enemy, run the fight
+        if levels[rand_num].type == "enemy":
+            pressed_keys = pygame.key.get_pressed()
+
+            player.update(pressed_keys)
+
+            screen.blit(player.image, player.rect)
+            pygame.display.flip()
+
+        #If question, check if player gets the right answer
+        else:
+            #Setting variables to be used
+            player_ans = bool
+            answer = questions[question_num].ans
+
+            #True button
+            if 220+280>mouse[0]>220 and 500+110>mouse[1]>500 and click[0]==1:
+                player_ans = True
+                break
+
+            #False button
+            if 700+280>mouse[0]>700 and 500+110>mouse[1]>500 and click[0]==1:
+                player_ans = False
+                break
+
+    #Checking of the player's answer is correct and changing the score accordingly
+    if levels[rand_num].type == "question":
+        if player_ans == answer:
+            points += 25
+            print("correct")
+        else:
+            points -= 10
+            print("wrong")
 
 
 
@@ -300,15 +375,10 @@ pygame.display.set_caption("Dungeon Game")
 player = Player()
 weapons = Weapons()
 
-#Removing hats
-wearing = "Hat-Blank.png"
-
 
 
 ## Running the game
-game()
-#start_screen()
+start_screen()
+#game()
 #custom_screen(wearing)
 #highscores_screen()
-
-#level_gen(levels)
