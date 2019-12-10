@@ -19,15 +19,19 @@ class Player(pygame.sprite.Sprite):
         #Movement keys (arrows/wasd)
         if pressed_keys[K_UP] or pressed_keys[K_w]:
             screen.blit(player.surf,player.rect)
+            self.surf.fill((239,228,176))
             self.rect.move_ip(0, -5)
         if pressed_keys[K_DOWN] or pressed_keys[K_s]:
             screen.blit(player.surf,player.rect)
+            self.surf.fill((239,228,176))
             self.rect.move_ip(0, 5)
         if pressed_keys[K_LEFT] or pressed_keys[K_a]:
             screen.blit(player.surf,player.rect)
+            self.surf.fill((239,228,176))
             self.rect.move_ip(-5, 0)
         if pressed_keys[K_RIGHT] or pressed_keys[K_d]:
             screen.blit(player.surf,player.rect)
+            self.surf.fill((239,228,176))
             self.rect.move_ip(5, 0)
 
         #Keep player on the screen
@@ -125,8 +129,7 @@ def quit_game():
 
 #Changing the background
 def background():
-    background_img = pygame.image.load(path.join(working_dir,"Sprites/Background.png"))
-    screen.blit(background_img,(0,0))
+    img(1200,800,0,0,"Background.png")
 
 
 
