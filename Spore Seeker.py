@@ -11,9 +11,9 @@ working_dir = path.dirname(__file__)
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((96,96))
+        self.surf = pygame.Surface((78,96))
         self.rect = self.surf.get_rect()
-        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Icon-Player.png")),(96,96))
+        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Player-Blue.png")),(78,96))
 
     def update(self, pressed_keys):
         #Movement keys (arrows/wasd)
@@ -52,13 +52,16 @@ class Enemy:
         self.img = img
 
     def load(self):
-        pygame.transform.scale(pygame.image.load(path.join(working_dir,self.img)),(64,64))
+        pygame.transform.scale(pygame.image.load(path.join(working_dir,self.img)),(62,58))
 
     def health(self,health):
         alive = True
 
         if health <= 0:
             alive = False
+
+    def move(self):
+        pass
 
 
 
@@ -67,7 +70,7 @@ class Question:
         self.quest = quest
         self.ans = ans
 
-    def load():
+    def load(self):
         pass
 
 
@@ -81,12 +84,13 @@ class Level:
         rand_num = random.randint(0,7)
         if self.type == "enemy":
             print("enemy")
-            #self.load()
             enemy_img = enemies[rand_num].img
             img(64,64,400,400,enemy_img)
         else:
             print("question")
             question = questions[rand_num].quest
+            ##print(question)
+            questions[rand_num].load()
             answer = questions[rand_num].ans
 
             img(280,110,220,500,"Button-True.png")
@@ -101,7 +105,7 @@ class Weapons:
 
 
 
-### Called Modules ###
+### Other Modules ###
 #When escape or the exit button is pressed, quit the game
 def quit_game():
     clock = pygame.time.Clock()
@@ -175,16 +179,16 @@ enemies.append(Enemy(125,35,"v",10,"Enemy-V4.png"))
 questions = []
 
 #True answers
-questions.append(Question("",True))
-questions.append(Question("",True))
-questions.append(Question("",True))
-questions.append(Question("",True))
+questions.append(Question("In Pokemon, there is a virus called Pokerus that Pokemon can contract.",True))
+questions.append(Question("In Super Mario 64, there are 120 stars to collect.",True))
+questions.append(Question("In Overwatch, Tracer has 40 bullets in her pistols.",True))
+questions.append(Question("In Stardew Valley, there are 30 bundles in the Community Centre",True))
 
 #False answers
-questions.append(Question("",False))
-questions.append(Question("",False))
-questions.append(Question("",False))
-questions.append(Question("",False))
+questions.append(Question("The original Legend of Zelda game was released in 1989.",False))
+questions.append(Question("In Minecraft, there are 15 colours of wool",False))
+questions.append(Question("In Apex Legends, Caustic can set up poison traps and electric fences.",False))
+questions.append(Question("League of Legends was published by Riot Entertainment",False))
 
 
 
@@ -225,7 +229,7 @@ def start_screen():
 
 
 
-#The customisation screen with buttons which can be clicked to change the hat the user is wearing
+#The customisation screen with buttons which can be clicked to change the colour of the player's mushroom
 def custom_screen(wearing):
     running = True
 
@@ -238,10 +242,10 @@ def custom_screen(wearing):
     img(128,128,200,400,"GUI-Custom.png")
     img(128,128,872,145,"GUI-Custom.png")
     img(128,128,872,400,"GUI-Custom.png")
-    img(64,64,232,177,"Hat-Tophat.png")
-    img(64,64,232,432,"Hat-Fez.png")
-    img(64,64,904,177,"Hat-Cowboy.png")
-    img(64,64,904,432,"Hat-Party.png")
+    img(78,96,225,161,"Player-Blue.png")
+    img(78,96,225,416,"Player-Pink.png")
+    img(78,96,897,161,"Player-Green.png")
+    img(78,96,897,416,"Player-Orange.png")
     pygame.display.flip()
 
 
@@ -259,16 +263,16 @@ def custom_screen(wearing):
 
         #Hat 1
         if 200+128>mouse[0]>200 and 145+128>mouse[1]>145 and click[0]==1:
-            wearing = "Hat-Tophat.png"
+            sprite = "Player-Blue.png"
         #Hat 2
         if 200+128>mouse[0]>200 and 400+128>mouse[1]>400 and click[0]==1:
-            wearing = "Hat-Fez.png"
+            sprite = "Player-Pink.png"
         #Hat 3
         if 872+128>mouse[0]>872 and 145+128>mouse[1]>145 and click[0]==1:
-            wearing = "Hat-Cowboy.png"
+            sprite = "Player-Green.png"
         #Hat 4
         if 872+128>mouse[0]>872 and 400+128>mouse[1]>400 and click[0]==1:
-            wearing = "Hat-Party.png"
+            sprite = "Player-Orange.png"
 
 
 
