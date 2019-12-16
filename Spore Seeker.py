@@ -44,6 +44,9 @@ class Player(pygame.sprite.Sprite):
         elif self.rect.bottom >= height:
             self.rect.bottom = height
 
+    def changeImage(self,image):
+        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+image)),(78,96))
+
 
 
 #Enemies
@@ -84,7 +87,7 @@ class Level:
         self.lvl = lvl
         self.type = type
 
-    def level_gen(self,points):
+    def levelGen(self,points):
         rand_num = random.randint(0,7)
         if self.type == "enemy":
             print("enemy")
@@ -127,17 +130,17 @@ def quit_game():
 
 
 
-#Changing the background
-def background():
-    img(1200,800,0,0,"Background.png")
-
-
-
 #Loads and displays an image
 def img(w,h,x,y,file):
     image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+file)),(w,h))
     screen.blit(image,(x,y))
     pygame.display.flip()
+
+
+
+#Changing the background
+def background():
+    img(1200,800,0,0,"Background.png")
 
 
 
@@ -262,6 +265,7 @@ def custom_screen(wearing):
 
         #Back button
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
+            player.changeImage(sprite)
             start_screen()
 
         #Hat 1
@@ -303,13 +307,13 @@ def highscores_screen():
 
 #The main game
 def game():
-    screen.fill((239,228,176))
+    background()
 
     running = True
     points = 100                #Player starts with 100 points
 
     rand_num = random.randint(0,7)
-    question_num = levels[rand_num].level_gen(points)
+    question_num = levels[rand_num].levelGen(points)
 
 
     while running:
@@ -355,11 +359,7 @@ def game():
             points -= 10
             print("wrong")
 
-
-
-### Called Game Modules ###
-def weapons():
-    pass
+    print(str(points))
 
 
 
@@ -379,7 +379,7 @@ height = 800
 
 #Defining the size of the screen and the tab name
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Dungeon Game")
+pygame.display.set_caption("Spore Seeker")
 
 #Setting variables to reference the classes
 player = Player()
