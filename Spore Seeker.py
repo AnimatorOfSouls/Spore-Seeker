@@ -259,7 +259,7 @@ def start_screen():
     background()
 
     #Loading icon
-    img(512,512,180,140,"Game-Icon-Text.png")
+    img(512,512,194,144,"Game-Icon-Text.png")
 
     #Loading buttons - 20y space between each button
     img(280,110,900,20,"Button-Start.png")      #Start button
@@ -268,6 +268,8 @@ def start_screen():
     img(280,110,900,410,"Button-Control.png")   #Controls
     img(280,110,900,540,"Button-About.png")     #About the game
     img(280,110,900,670,"Button-Exit.png")      #Exit the game
+
+
 
 
     while True:
@@ -294,14 +296,18 @@ def start_screen():
             about_screen()
         #Exit the game
         if 900+280>mouse[0]>900 and 670+110>mouse[1]>670 and click[0]==1:
-            running = False
-            pygame.display.quit()
+            pygame.quit()
+            quit()
 
 
 
 #The customisation screen with buttons which can be clicked to change the colour of the player's mushroom
 def custom_screen():
     background()
+
+    global sprite
+
+    text_loader(100,250,"Pick A Colour","You:")
 
     #Loading buttons
     #Variables to input: width, height, x position, y position, file name (in Sprites folder)
@@ -314,14 +320,20 @@ def custom_screen():
     img(78,96,225,416,"Player-Pink.png")
     img(78,96,897,161,"Player-Green.png")
     img(78,96,897,416,"Player-Orange.png")
+    img(195,240,503,280,sprite)
     pygame.display.flip()
 
-    sprite = "Player-Red.png"
+    #Prevents accidentally clicking a colour after clicking the button
+    pygame.time.wait(50)
+
 
 
     # Running #
     while True:
         quit_game()
+
+        #Displaying the currently selected sprite
+        img(195,240,503,280,sprite)
 
         #Checking if a button is pressed, and then running what the button should do
         mouse = pygame.mouse.get_pos()
@@ -331,6 +343,7 @@ def custom_screen():
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
             player.changeImage(sprite)
             start_screen()
+
 
         #Hat 1
         if 200+128>mouse[0]>200 and 145+128>mouse[1]>145 and click[0]==1:
@@ -440,6 +453,7 @@ def game():
 
                 screen.blit(player.image, player.rect)
                 pygame.display.flip()
+                break
 
             #If question, check if player gets the right answer
             else:
@@ -469,6 +483,61 @@ def game():
 
         pygame.time.wait(50)
 
+    print("Please type your username into the terminal.")
+    username = str(input(""))
+
+
+
+def game_over():
+    background()
+    text_loader(200,330,"Game Over!","Username:")
+
+    #Defining the font + colour
+    font = pygame.font.Font('freesansbold.ttf', 64)
+    colour = (171, 62, 153)
+
+    #Creating an empty variable for the username
+    username = ""
+
+
+
+    while True:
+        event = pygame.event.poll()
+        keys = pygame.key.get_pressed()
+
+        if event.type == pygame.KEYDOWN:
+            key = pygame.key.name(event.key)  # Returns string id of pressed key.
+
+            if len(key) == 1:  # This covers all letters and numbers not on numpad.
+                if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                    #if  # Include any other shift characters here.
+                    #else:
+                    username += key.upper()
+                else:
+                    username += key
+            #elif  # Include any other characters here.
+            if key == "backspace":
+                username = username[:len(username) - 1]
+            elif event.key == pygame.K_RETURN:  # Finished typing.
+                if len(username) > 15:
+                    text_loader(0,600,"","Your username is too long! (max 15 characters)")
+                    pygame.time.wait(2000)
+                elif len(username) <= 0:
+                    text_loader(0,600,"","You must enter a username!")
+                    pygame.time.wait(2000)
+                else:
+                    leaderboard_screen()
+
+
+            background()
+            text_loader(200,330,"Game Over!","Username:")
+
+            text = font.render(username, True, colour)
+            text_rect = text.get_rect()
+            text_rect.center = (600,400)
+            screen.blit(text, text_rect)
+            pygame.display.update()
+
 
 
 
@@ -494,10 +563,15 @@ player = Player()
 weapons = Weapons()
 
 
+#Setting the default sprite colour
+sprite = "Player-Red.png"
+
 
 ## Running the game
-start_screen()
+#start_screen()
 #game()
+#sprite = "Player-Red.png"
 #custom_screen()
 #leaderboard_screen()
 #about_screen()
+game_over()
