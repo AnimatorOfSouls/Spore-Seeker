@@ -2,6 +2,8 @@ import pygame
 from pygame.locals import *
 from os import path
 import random
+import mysql.connector
+from mysql.connector import Error
 
 working_dir = path.dirname(__file__)
 
@@ -75,7 +77,8 @@ class Question:
         self.ans = ans
 
     def load(self):
-        text_loader(100,300,"Question Time!",self.quest)
+        text_loader(100,"Question Time!",64)
+        text_loader(300,self.quest,32)
 
 
 
@@ -143,30 +146,24 @@ def background():
 
 
 
-#loads a header and the text
-def text_loader(h_pos,m_pos,h_text,m_text):
+#loads text
+def text_loader(pos,text,size):
     #loading a font to be used. Parameters:(font name, font size)
-    font_big = pygame.font.Font('freesansbold.ttf', 64)
-    font_small = pygame.font.Font('freesansbold.ttf', 32)
+    font = pygame.font.Font('freesansbold.ttf', size)
 
     #defining the colour of the text, and the displayed text
     text_colour = (91,0,14)
 
     #Creating a rect surface for text and drawing the text on to the surface
-    ##Header
-    header_text = font_big.render(h_text, True, text_colour)
-    headerTextRect = header_text.get_rect()
-    ##Main Text
-    main_text = font_small.render(m_text, True, text_colour)
-    mainTextRect = main_text.get_rect()
+    text = font.render(text, True, text_colour)
+    textRect = text.get_rect()
 
     #setting the central location fo the rect
-    headerTextRect.center = (600, h_pos)
-    mainTextRect.center = (600, m_pos)
+    textRect.center = (600, pos)
+
 
     #displaying the text
-    screen.blit(header_text, headerTextRect)
-    screen.blit(main_text, mainTextRect)
+    screen.blit(text, textRect)
     pygame.display.flip()
 
 
@@ -195,6 +192,99 @@ def disp_points(points):
 
 
 
+#Insertion sort
+def insert_sort():
+    global highscores
+
+    tempstore = 0
+    listpoint = 0
+
+    #Looping through the scores
+    for i in range (len(highscores)):
+        #Initiating temporary variables
+        listpoint = i
+        tempstore = highscores[listpoint]
+
+
+        #Sorting the list
+        while listpoint > 0 and highscores[listpoint][1] < highscores[listpoint-1][1]:
+            highscores[listpoint] = highscores[listpoint-1]
+            listpoint = listpoint-1
+            highscores[listpoint] = tempstore
+
+    #Reversing the table to be from highest to lowest
+    highscores = highscores[::-1]
+
+
+
+#Read database into array
+def sql_linker():
+    global highscores
+    global username
+    global points
+
+
+
+    try:
+        mydb = mysql.connector.connect(
+            host="localhost",
+            database="highscores",
+            user="root",
+            password="sporeseeker"
+            )
+
+        if mydb.is_connected():
+            mydb_Info = mydb.get_server_info()
+            print("Connected to MySQL Server version ", mydb_Info)
+            mycursor = mydb.cursor(buffered=True)
+            mycursor.execute("select database();")
+            record = mycursor.fetchone()
+            print("You're connected to database: ", record)
+
+
+            if username != "":
+                #Inserting the username and score into the database
+                sql = "INSERT INTO highscores (username,score) VALUES (%s,%s)"
+                val = (username,points)
+                mycursor.execute(sql,val)
+                mydb.commit()
+
+
+            #Importing database into the array
+            mycursor.execute("SELECT * FROM highscores")
+            myresult = mycursor.fetchall()
+            for row in myresult:
+              highscores.append(row[1:3])
+
+
+            #Sorting the database
+            insert_sort()
+
+
+
+
+
+    #Error message if connection failed
+    except Error as e:
+            print("Error while connecting to MySQL", e)
+    #Closing the SQL connection
+    finally:
+        if (mydb.is_connected()):
+            mycursor.close()
+            mydb.close()
+            print("MySQL mydb is closed")
+
+
+
+#Clearing previously stored data
+def clear_data():
+    global points
+    global username
+    global highscores
+
+    points = 100
+    username = ""
+    highscores = []
 
 
 
@@ -281,6 +371,7 @@ def start_screen():
 
         #Start game
         if 900+280>mouse[0]>900 and 20+110>mouse[1]>20 and click[0]==1:
+            clear_data()
             game()
         #Customisation menu
         if 900+280>mouse[0]>900 and 150+110>mouse[1]>150 and click[0]==1:
@@ -307,7 +398,8 @@ def custom_screen():
 
     global sprite
 
-    text_loader(100,250,"Pick A Colour","You:")
+    text_loader(100,"Pick A Colour",64)
+    text_loader(250,"You:",32)
 
     #Loading buttons
     #Variables to input: width, height, x position, y position, file name (in Sprites folder)
@@ -363,10 +455,22 @@ def custom_screen():
 #The leaderboard screen with a highscores table and a button to return to the start screen
 def leaderboard_screen():
     background()
-    text_loader(100,250,"Leaderboard","scores")
+    global highscores
+
+    text_loader(100,"Leaderboard",64)
+    text_loader(250,"scores",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
+
+    #Importing the sorted table
+    sql_linker()
+
+
+    #Printing the sorted table
+    print("Name:\t\tScore:")
+    for i in range(len(highscores)):
+        print(highscores[i][0] + "\t\t" + str(highscores[i][1]))
 
     while True:
         quit_game()
@@ -384,7 +488,8 @@ def leaderboard_screen():
 #Shows all the controls
 def controls_screen():
     background()
-    text_loader(100,250,"Controls","press buttons")
+    text_loader(100,"Controls",64)
+    text_loader(250,"press buttons",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -405,7 +510,8 @@ def controls_screen():
 #A screen showing information about the game
 def about_screen():
     background()
-    text_loader(100,250,"About the Game","owo/t")
+    text_loader(100,"About the Game",64)
+    text_loader(250,"owo",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -425,7 +531,7 @@ def about_screen():
 
 #The main game
 def game():
-    points = 100                #Player starts with 100 points
+    global points
 
     for repeat in range(10):
         background()
@@ -483,24 +589,27 @@ def game():
 
         pygame.time.wait(50)
 
-    print("Please type your username into the terminal.")
-    username = str(input(""))
+    game_over()
 
 
 
+#Game over screen display number of points and asks for username
 def game_over():
     background()
-    text_loader(200,330,"Game Over!","Username:")
+    global points
+    global username
+    global highscores
+
+    text_loader(200,"Game Over!",64)
+    text_loader(330,"Username:",32)
 
     #Defining the font + colour
     font = pygame.font.Font('freesansbold.ttf', 64)
     colour = (171, 62, 153)
 
-    #Creating an empty variable for the username
-    username = ""
 
 
-
+    #Recieving username
     while True:
         event = pygame.event.poll()
         keys = pygame.key.get_pressed()
@@ -520,17 +629,19 @@ def game_over():
                 username = username[:len(username) - 1]
             elif event.key == pygame.K_RETURN:  # Finished typing.
                 if len(username) > 15:
-                    text_loader(0,600,"","Your username is too long! (max 15 characters)")
+                    text_loader(600,"Your username is too long! (max 15 characters)",32)
                     pygame.time.wait(2000)
                 elif len(username) <= 0:
-                    text_loader(0,600,"","You must enter a username!")
+                    text_loader(600,"You must enter a username!",32)
                     pygame.time.wait(2000)
                 else:
                     leaderboard_screen()
 
 
+
             background()
-            text_loader(200,330,"Game Over!","Username:")
+            text_loader(200,"Game Over!",64)
+            text_loader(330,"Username:",32)
 
             text = font.render(username, True, colour)
             text_rect = text.get_rect()
@@ -562,16 +673,16 @@ pygame.display.set_caption("Spore Seeker")
 player = Player()
 weapons = Weapons()
 
-
 #Setting the default sprite colour
 sprite = "Player-Red.png"
 
+clear_data()
+
 
 ## Running the game
-#start_screen()
+start_screen()
 #game()
-#sprite = "Player-Red.png"
 #custom_screen()
 #leaderboard_screen()
 #about_screen()
-game_over()
+#game_over()

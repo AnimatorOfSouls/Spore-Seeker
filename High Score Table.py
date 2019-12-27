@@ -5,14 +5,14 @@ def import_score():
     score = []
     score_table = score*9
     #Defining the 2D array
-    
+
     #Importing the score into the 2D array
     with open("highscores.csv") as score_file:
         reader = csv.reader(score_file)
-        
+
         for row in reader:
             score_table.append(row)
-            
+
         return score_table
 
 
@@ -21,20 +21,20 @@ def import_score():
 def insert_sort(table):
     tempstore = 0
     listpoint = 0
-    
+
     #Looping through the scores
     for i in range (len(table)):
         #Initiating temporary variables
         listpoint = i
         tempstore = table[listpoint]
-        
-        
+
+
         #Sorting the list
         while listpoint > 0 and table[listpoint][1] < table[listpoint-1][1]:
             table[listpoint] = table[listpoint-1]
             listpoint = listpoint-1
             table[listpoint] = tempstore
-        
+
     return table
 
 
