@@ -489,7 +489,11 @@ def leaderboard_screen():
 def controls_screen():
     background()
     text_loader(100,"Controls",64)
-    text_loader(250,"press buttons",32)
+    text_loader(250,"w = up",32)
+    text_loader(290,"s = down",32)
+    text_loader(330,"a = left",32)
+    text_loader(370,"d = right",32)
+    text_loader(470,"left click = attack",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -511,7 +515,20 @@ def controls_screen():
 def about_screen():
     background()
     text_loader(100,"About the Game",64)
-    text_loader(250,"owo",32)
+    text_loader(180,"In Spore Seeker, the aim of the game is to collect as",32)
+    text_loader(220,"many spores (aka. points) as possible within 10 levels.",32)
+    
+    text_loader(280,"On each level, you will encounter either a question",32)
+    text_loader(320,"about a game or a combat situation where the player",32)
+    text_loader(360,"must defeat all of the enemies on screen in order to",32)
+    text_loader(400,"progress to the next level.",32)
+    
+    text_loader(460,"The top 10 scores can be viewed by clicking the 'scores'",32)
+    text_loader(500,"button on the main menu.",32)
+    
+    text_loader(560,"Good luck, and may the best mushroom win!",32)
+
+    
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -601,7 +618,8 @@ def game_over():
     global highscores
 
     text_loader(200,"Game Over!",64)
-    text_loader(330,"Username:",32)
+    text_loader(300,"Final Score: "+str(points),32)
+    text_loader(360,"Username:",32)
 
     #Defining the font + colour
     font = pygame.font.Font('freesansbold.ttf', 64)
@@ -641,7 +659,8 @@ def game_over():
 
             background()
             text_loader(200,"Game Over!",64)
-            text_loader(330,"Username:",32)
+            text_loader(300,"Final Score: "+str(points),32)
+            text_loader(360,"Username:",32)
 
             text = font.render(username, True, colour)
             text_rect = text.get_rect()
