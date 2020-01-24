@@ -498,6 +498,7 @@ def leaderboard_screen():
 def controls_screen():
     background()
     text_loader(100,"Controls",64)
+<<<<<<< HEAD
     text_loader(200,"-=<( Movement )>=-",32)
     text_loader(240,"Move Up: W / Up Button",32)
     text_loader(280,"Move Down: S / Down Button",32)
@@ -505,6 +506,13 @@ def controls_screen():
     text_loader(360,"Move Right: D / Right Button",32)
     text_loader(460,"-=<( Other )>=-",32)
     text_loader(500,"Attack/Click: Left Mouse Button",32)
+=======
+    text_loader(250,"w = up",32)
+    text_loader(290,"s = down",32)
+    text_loader(330,"a = left",32)
+    text_loader(370,"d = right",32)
+    text_loader(470,"left click = attack",32)
+>>>>>>> e6f9d98ea83757b4f27d2bc15c173241e9d7a31d
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -622,7 +630,8 @@ def game_over():
     global username
 
     text_loader(200,"Game Over!",64)
-    text_loader(330,"Username:",32)
+    text_loader(300,"Final Score: "+str(points),32)
+    text_loader(360,"Username:",32)
 
     #Defining the font + colour
     font = pygame.font.Font('freesansbold.ttf', 64)
@@ -661,7 +670,8 @@ def game_over():
 
             background()
             text_loader(200,"Game Over!",64)
-            text_loader(330,"Username:",32)
+            text_loader(300,"Final Score: "+str(points),32)
+            text_loader(360,"Username:",32)
 
             text = font.render(username, True, colour)
             text_rect = text.get_rect()
