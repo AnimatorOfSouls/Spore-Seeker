@@ -223,8 +223,6 @@ def sql_linker():
     global username
     global points
 
-
-
     try:
         mydb = mysql.connector.connect(
             host="localhost",
@@ -457,8 +455,10 @@ def leaderboard_screen():
     background()
     global highscores
 
+    #Clearing highscores to prevent multiple views of leaderboard from adding to the same array
+    highscores = []
+
     text_loader(100,"Leaderboard",64)
-    text_loader(250,"scores",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -471,6 +471,15 @@ def leaderboard_screen():
     print("Name:\t\tScore:")
     for i in range(len(highscores)):
         print(highscores[i][0] + "\t\t" + str(highscores[i][1]))
+
+    #Displaying the sorted table
+    #text_loader(,"",32)
+    text_pos = 200
+    for i in range(10):
+        text_loader(text_pos,highscores[i][0] + "               " + str(highscores[i][1]),32)
+        text_pos += 40
+
+
 
     while True:
         quit_game()
@@ -489,7 +498,13 @@ def leaderboard_screen():
 def controls_screen():
     background()
     text_loader(100,"Controls",64)
-    text_loader(250,"press buttons",32)
+    text_loader(200,"-=<( Movement )>=-",32)
+    text_loader(240,"Move Up: W / Up Button",32)
+    text_loader(280,"Move Down: S / Down Button",32)
+    text_loader(320,"Nove Left: A / Left Button",32)
+    text_loader(360,"Move Right: D / Right Button",32)
+    text_loader(460,"-=<( Other )>=-",32)
+    text_loader(500,"Attack/Click: Left Mouse Button",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -511,7 +526,14 @@ def controls_screen():
 def about_screen():
     background()
     text_loader(100,"About the Game",64)
-    text_loader(250,"owo",32)
+    text_loader(180,"In Spore Seeker, the aim of the game is to collect as",32)
+    text_loader(220,"many spores (points) as possible.",32)
+    text_loader(300,"The game ends either when your points reach zero, or after",32)
+    text_loader(340,"10 levels. Each level will present you with either enemies",32)
+    text_loader(380,"to defeat or true-or-false quiz questions. Only the top 10",32)
+    text_loader(420,"scores will be displayed on the leaderboard,",32)
+    text_loader(460,"so good luck, have fun, and don't die!",32)
+    text_loader(540,"Good luck in your adventures!",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -598,7 +620,6 @@ def game_over():
     background()
     global points
     global username
-    global highscores
 
     text_loader(200,"Game Over!",64)
     text_loader(330,"Username:",32)
@@ -619,12 +640,11 @@ def game_over():
 
             if len(key) == 1:  # This covers all letters and numbers not on numpad.
                 if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-                    #if  # Include any other shift characters here.
-                    #else:
                     username += key.upper()
                 else:
                     username += key
-            #elif  # Include any other characters here.
+
+
             if key == "backspace":
                 username = username[:len(username) - 1]
             elif event.key == pygame.K_RETURN:  # Finished typing.
