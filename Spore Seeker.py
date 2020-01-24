@@ -498,23 +498,13 @@ def leaderboard_screen():
 def controls_screen():
     background()
     text_loader(100,"Controls",64)
-<<<<<<< HEAD
     text_loader(200,"-=<( Movement )>=-",32)
     text_loader(240,"Move Up: W / Up Button",32)
     text_loader(280,"Move Down: S / Down Button",32)
     text_loader(320,"Nove Left: A / Left Button",32)
     text_loader(360,"Move Right: D / Right Button",32)
     text_loader(460,"-=<( Other )>=-",32)
-    text_loader(500,"Attack/Click: Left Mouse Button",32)
-=======
-    text_loader(250,"w = up",32)
-    text_loader(290,"s = down",32)
-    text_loader(330,"a = left",32)
-    text_loader(370,"d = right",32)
-    text_loader(470,"left click = attack",32)
->>>>>>> e6f9d98ea83757b4f27d2bc15c173241e9d7a31d
-
-    #Loading back button
+    text_loader(500,"Attack/Click: Left Mouse Button",32)#Loading back button
     img(280,110,460,600,"Button-Back.png")
 
     while True:
