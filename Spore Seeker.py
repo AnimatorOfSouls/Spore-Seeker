@@ -477,7 +477,7 @@ def leaderboard_screen():
     text_pos = 200
     for i in range(10):
         text_loader(text_pos,highscores[i][0] + "               " + str(highscores[i][1]),32)
-        text_pos += 40
+        text_pos += 40 #Moves the location of the next score down by 40px
 
 
 
@@ -504,8 +504,10 @@ def controls_screen():
     text_loader(320,"Nove Left: A / Left Button",32)
     text_loader(360,"Move Right: D / Right Button",32)
     text_loader(460,"-=<( Other )>=-",32)
-    text_loader(500,"Attack/Click: Left Mouse Button",32)#Loading back button
-    img(280,110,460,600,"Button-Back.png")
+    text_loader(500,"Attack/Click: Left Mouse Button",32)
+    text_loader(540,"Exit Game: Esc Button",32)
+
+    img(280,110,460,600,"Button-Back.png") #Loading back button
 
     while True:
         quit_game()
