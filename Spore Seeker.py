@@ -2,8 +2,8 @@ import pygame
 from pygame.locals import *
 from os import path
 import random
-import mysql.connector
-from mysql.connector import Error
+#import mysql.connector
+#from mysql.connector import Error
 
 working_dir = path.dirname(__file__)
 
@@ -60,14 +60,15 @@ class Enemy:
     def load(self):
         pygame.transform.scale(pygame.image.load(path.join(working_dir,self.img)),(62,58))
 
-    def health(self,health):
-        alive = True
-
-        if health <= 0:
-            alive = False
+    def health(self,hit):
+        if hit = True:
+            self.hp -= 30
 
     def move(self):
-        pass
+        if self.move = horiz:
+            print("moving left/right")
+        else:
+            print("moving up/down")
 
 
 
@@ -87,16 +88,13 @@ class Level:
         self.lvl = lvl
         self.type = type
 
-    def levelGen(self,points):
+    def levelGen(self):
         rand_num = random.randint(0,7)
         if self.type == "enemy":
-            print("enemy")
             enemy_img = enemies[rand_num].img
             img(64,64,400,400,enemy_img)
         else:
-            print("question")
             question = questions[rand_num].quest
-            ##print(question)
             questions[rand_num].load()
             answer = questions[rand_num].ans
 
@@ -146,7 +144,7 @@ def background():
 
 
 
-#loads text
+#loads text aligned to the center of the screen
 def text_loader(pos,text,size):
     #loading a font to be used. Parameters:(font name, font size)
     font = pygame.font.Font('freesansbold.ttf', size)
@@ -158,9 +156,29 @@ def text_loader(pos,text,size):
     text = font.render(text, True, text_colour)
     textRect = text.get_rect()
 
-    #setting the central location fo the rect
+    #setting the central location of the rect
     textRect.center = (600, pos)
 
+    #displaying the text
+    screen.blit(text, textRect)
+    pygame.display.flip()
+
+    
+
+#loads text anywhere on the screen
+def text_loader_pos(posx,posy,text,size):
+    #loading a font to be used. Parameters:(font name, font size)
+    font = pygame.font.Font('freesansbold.ttf', size)
+
+    #defining the colour of the text, and the displayed text
+    text_colour = (91,0,14)
+
+    #Creating a rect surface for text and drawing the text on to the surface
+    text = font.render(text, True, text_colour)
+    textRect = text.get_rect()
+
+    #setting the central location of the rect
+    textRect.center = (posx, posy)
 
     #displaying the text
     screen.blit(text, textRect)
@@ -173,22 +191,7 @@ def disp_points(points):
     img(32,32,1050,20,"GUI-Point.png")
     points = str(points)
 
-    #loading a font to be used. Parameters:(font name, font size)
-    font = pygame.font.Font('freesansbold.ttf', 32)
-
-    #defining the colour of the text, and the displayed text
-    text_colour = (91,0,14)
-
-    #Creating a rect surface for text and drawing the text on to the surface
-    text = font.render(points, True, text_colour)
-    textRect = text.get_rect()
-
-    #setting the central location fo the rect
-    textRect.center = (1125, 36)
-
-    #displaying the text
-    screen.blit(text, textRect)
-    pygame.display.flip()
+    text_loader_pos(1125,36,points,32)
 
 
 
@@ -466,17 +469,22 @@ def leaderboard_screen():
     #Importing the sorted table
     sql_linker()
 
-
     #Printing the sorted table
-    print("Name:\t\tScore:")
-    for i in range(len(highscores)):
-        print(highscores[i][0] + "\t\t" + str(highscores[i][1]))
+    #print("Name:\t\tScore:")
+    #for i in range(len(highscores)):
+        #print(highscores[i][0] + "\t\t" + str(highscores[i][1]))
 
-    #Displaying the sorted table
-    #text_loader(,"",32)
+    #Displaying the headers for each column
+    text_loader_pos(150,150,"Rank",48)
+    text_loader_pos(300,150,"Username",48)
+    text_loader_pos(900,150,"Score",48)
+
+    #Displaying the sorted table using text_loader_pos(posx,posy,text,size)
     text_pos = 200
     for i in range(10):
-        text_loader(text_pos,highscores[i][0] + "               " + str(highscores[i][1]),32)
+        text_loader_pos(150,text_pos,i+1+")",32)
+        text_loader_pos(300,text_pos,highscores[i][0],32)
+        text_loader_pos(900,text_pos,highscores[i][1],32)
         text_pos += 40
 
 
