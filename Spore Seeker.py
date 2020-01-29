@@ -381,7 +381,8 @@ def custom_screen():
 
     global sprite
 
-    text_loader(100,"Pick A Colour",64)
+    text_loader(100,"Customisation",64)
+    text_loader(200,"Pick A Colour",38)
     text_loader(250,"You:",32)
 
     #Loading buttons
@@ -562,7 +563,6 @@ def game():
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
 
-
             #Checking if the current level has an enemy or a question
             #If enemy, run the fight
             if levels[rand_num].type == "enemy":
@@ -571,6 +571,7 @@ def game():
                 player.update(pressed_keys)
 
                 screen.blit(player.image, player.rect)
+
                 pygame.display.flip()
                 break
 
@@ -615,6 +616,7 @@ def game_over():
     text_loader(200,"Game Over!",64)
     text_loader(300,"Final Score: "+str(points),32)
     text_loader(360,"Username:",32)
+    text_loader(700,"Press Enter to Continue",32)
 
     #Defining the font + colour
     font = pygame.font.Font('freesansbold.ttf', 64)
@@ -655,6 +657,7 @@ def game_over():
             text_loader(200,"Game Over!",64)
             text_loader(300,"Final Score: "+str(points),32)
             text_loader(360,"Username:",32)
+            text_loader(700,"Press Enter to Continue",32)
 
             text = font.render(username, True, colour)
             text_rect = text.get_rect()
