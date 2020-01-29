@@ -2,8 +2,7 @@ import pygame
 from pygame.locals import *
 from os import path
 import random
-#import mysql.connector
-#from mysql.connector import Error
+import sqlite3
 
 working_dir = path.dirname(__file__)
 
@@ -13,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.surf = pygame.Surface((78,96))
         self.rect = self.surf.get_rect()
-        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Player-Blue.png")),(78,96))
+        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Player-Red.png")),(78,96))
 
     def update(self, pressed_keys):
         #Movement keys (arrows/wasd)
@@ -61,11 +60,11 @@ class Enemy:
         pygame.transform.scale(pygame.image.load(path.join(working_dir,self.img)),(62,58))
 
     def health(self,hit):
-        if hit = True:
+        if hit == True:
             self.hp -= 30
 
     def move(self):
-        if self.move = horiz:
+        if self.move == horiz:
             print("moving left/right")
         else:
             print("moving up/down")
@@ -163,7 +162,7 @@ def text_loader(pos,text,size):
     screen.blit(text, textRect)
     pygame.display.flip()
 
-    
+
 
 #loads text anywhere on the screen
 def text_loader_pos(posx,posy,text,size):
@@ -226,54 +225,35 @@ def sql_linker():
     global username
     global points
 
-    try:
-        mydb = mysql.connector.connect(
-            host="localhost",
-            database="highscores",
-            user="root",
-            password="sporeseeker"
-            )
-
-        if mydb.is_connected():
-            mydb_Info = mydb.get_server_info()
-            print("Connected to MySQL Server version ", mydb_Info)
-            mycursor = mydb.cursor(buffered=True)
-            mycursor.execute("select database();")
-            record = mycursor.fetchone()
-            print("You're connected to database: ", record)
+    conn = sqlite3.connect("Highscores.db")
+    cursor = conn.cursor()
 
 
-            if username != "":
-                #Inserting the username and score into the database
-                sql = "INSERT INTO highscores (username,score) VALUES (%s,%s)"
-                val = (username,points)
-                mycursor.execute(sql,val)
-                mydb.commit()
+    #Creating the table
+    conn.execute("CREATE TABLE IF NOT EXISTS highscores(id INTEGER PRIMARY KEY AUTOINCREMENT,username VARCHAR(15),score INT)")
 
 
-            #Importing database into the array
-            mycursor.execute("SELECT * FROM highscores")
-            myresult = mycursor.fetchall()
-            for row in myresult:
-              highscores.append(row[1:3])
+    #Inserting the username and score into the database after a game
+    if username != "":
+        sql = "INSERT INTO highscores (username,score) VALUES (?,?)"  #The SQL command to run
+        val = (username,points)
+        cursor.execute(sql,val)  #Inserting the data
+        conn.commit()       #Saving the entry
 
 
-            #Sorting the database
-            insert_sort()
+    #Importing database into the array
+    cursor.execute("SELECT * FROM highscores")
+    myresult = cursor.fetchall()
+    for row in myresult:
+        highscores.append(row[1:3])
 
 
+    #Sorting the database
+    insert_sort()
 
-
-
-    #Error message if connection failed
-    except Error as e:
-            print("Error while connecting to MySQL", e)
-    #Closing the SQL connection
-    finally:
-        if (mydb.is_connected()):
-            mycursor.close()
-            mydb.close()
-            print("MySQL mydb is closed")
+    #Closing the connections
+    cursor.close()
+    conn.close()
 
 
 
@@ -348,6 +328,8 @@ questions.append(Question("League of Legends was published by Riot Entertainment
 #The start screen with buttons leading to different "pages"
 def start_screen():
     background()
+
+    clear_data()
 
     #Loading icon
     img(512,512,194,144,"Game-Icon-Text.png")
@@ -469,28 +451,24 @@ def leaderboard_screen():
     #Importing the sorted table
     sql_linker()
 
-    #Printing the sorted table
-    #print("Name:\t\tScore:")
-    #for i in range(len(highscores)):
-        #print(highscores[i][0] + "\t\t" + str(highscores[i][1]))
-
     #Displaying the headers for each column
-    text_loader_pos(150,150,"Rank",48)
-    text_loader_pos(300,150,"Username",48)
-    text_loader_pos(900,150,"Score",48)
+    text_loader_pos(300,150,"Rank",36)
+    text_loader_pos(600,150,"Username",36)
+    text_loader_pos(900,150,"Score",36)
+
+    #If there are less than 10 scores saved, the number of scores available will be displayed
+    if len(highscores) < 10:
+        score_range = len(highscores)
+    else:
+        score_range = 10
 
     #Displaying the sorted table using text_loader_pos(posx,posy,text,size)
     text_pos = 200
-    for i in range(10):
-<<<<<<< HEAD
-        text_loader(text_pos,highscores[i][0] + "               " + str(highscores[i][1]),32)
-        text_pos += 40 #Moves the location of the next score down by 40px
-=======
-        text_loader_pos(150,text_pos,i+1+")",32)
-        text_loader_pos(300,text_pos,highscores[i][0],32)
-        text_loader_pos(900,text_pos,highscores[i][1],32)
+    for i in range(score_range):
+        text_loader_pos(300,text_pos,str(i+1)+")",32)
+        text_loader_pos(600,text_pos,highscores[i][0],32)
+        text_loader_pos(900,text_pos,str(highscores[i][1]),32)
         text_pos += 40
->>>>>>> 5136ae95a91553e8588a546c71c6d1fd69697d61
 
 
 
@@ -574,7 +552,7 @@ def game():
         print("Rep num: "+str(repeat))
 
         rand_num = random.randint(0,7)
-        question_num = levels[rand_num].levelGen(points)
+        question_num = levels[rand_num].levelGen()
 
 
         while True:
