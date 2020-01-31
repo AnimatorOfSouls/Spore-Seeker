@@ -50,6 +50,9 @@ class Player(pygame.sprite.Sprite):
 
 class Enemy:
     def __init__(self,hp,damage,move,dist,img):
+        self.surf = pygame.Surface((64,64))
+        self.rect = self.surf.get_rect()
+        self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Player-Red.png")),(64,64))
         self.hp = hp
         self.damage = damage
         self.move = move
@@ -63,11 +66,9 @@ class Enemy:
         if hit == True:
             self.hp -= 30
 
-    def move(self):
-        if self.move == horiz:
-            print("moving left/right")
-        else:
-            print("moving up/down")
+    def movement(self,moved):
+        if self.move == "h":
+            return
 
 
 
@@ -421,16 +422,16 @@ def custom_screen():
             start_screen()
 
 
-        #Hat 1
+        #Red
         if 200+128>mouse[0]>200 and 145+128>mouse[1]>145 and click[0]==1:
             sprite = "Player-Red.png"
-        #Hat 2
+        #Pink
         if 200+128>mouse[0]>200 and 400+128>mouse[1]>400 and click[0]==1:
             sprite = "Player-Pink.png"
-        #Hat 3
+        #Green
         if 872+128>mouse[0]>872 and 145+128>mouse[1]>145 and click[0]==1:
             sprite = "Player-Green.png"
-        #Hat 4
+        #Orange
         if 872+128>mouse[0]>872 and 400+128>mouse[1]>400 and click[0]==1:
             sprite = "Player-Orange.png"
 
@@ -550,10 +551,9 @@ def game():
     for repeat in range(10):
         background()
         disp_points(points)
-        print("Rep num: "+str(repeat))
 
         rand_num = random.randint(0,7)
-        question_num = levels[rand_num].levelGen()
+        q_num = levels[rand_num].levelGen()
 
 
         while True:
@@ -566,20 +566,23 @@ def game():
             #Checking if the current level has an enemy or a question
             #If enemy, run the fight
             if levels[rand_num].type == "enemy":
-                pressed_keys = pygame.key.get_pressed()
+                while True:
+                    pressed_keys = pygame.key.get_pressed()
 
-                player.update(pressed_keys)
+                    player.update(pressed_keys)
 
-                screen.blit(player.image, player.rect)
+                    screen.blit(player.image, player.rect)
 
-                pygame.display.flip()
-                break
+                    enemies[rand_num].movement()
+
+                    pygame.display.flip()
+                    pygame.time.wait(1000)
 
             #If question, check if player gets the right answer
             else:
                 #Setting variables to be used
                 player_ans = bool
-                answer = questions[question_num].ans
+                answer = questions[q_num].ans
 
                 #True button
                 if 220+280>mouse[0]>220 and 500+110>mouse[1]>500 and click[0]==1:
@@ -596,12 +599,14 @@ def game():
         if levels[rand_num].type == "question":
             if player_ans == answer:
                 points += 25
-                print("correct")
+                text_loader(400,"Correct",32)
+                
+                
             else:
                 points -= 15
-                print("wrong")
+                text_loader(400,"Incorrect",32)
 
-        pygame.time.wait(50)
+            pygame.time.wait(300)
 
     game_over()
 
@@ -630,10 +635,10 @@ def game_over():
         keys = pygame.key.get_pressed()
 
         if event.type == pygame.KEYDOWN:
-            key = pygame.key.name(event.key)  # Returns string id of pressed key.
+            key = pygame.key.name(event.key)  #Returns the id of the pressed key
 
-            if len(key) == 1:  # This covers all letters and numbers not on numpad.
-                if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+            if len(key) == 1:  #If the key is a letter/number not on numpad...
+                if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]: #If shift is being pressed, set the letter to a capital letter
                     username += key.upper()
                 else:
                     username += key
@@ -641,7 +646,7 @@ def game_over():
 
             if key == "backspace":
                 username = username[:len(username) - 1]
-            elif event.key == pygame.K_RETURN:  # Finished typing.
+            elif event.key == pygame.K_RETURN:  #If the enter key is pressed, run a check and enter the username
                 if len(username) > 15:
                     text_loader(600,"Your username is too long! (max 15 characters)",32)
                     pygame.time.wait(2000)
