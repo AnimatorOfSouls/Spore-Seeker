@@ -468,7 +468,7 @@ def game():
 
         rand_num = random.randint(0,len(questions)-1)   #generating a random number between 0 and the last position in the array of objects
         questions[rand_num].load()
-            
+
         while True:
             quit_game()
 
