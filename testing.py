@@ -220,21 +220,21 @@ questions = []
 questions.append(Question("In Pokemon, there is a virus called Pokerus that Pokemon can contract.","This is true",True,5))
 questions.append(Question("In Super Mario 64, there are 120 stars to collect.","This is true",True,3))
 questions.append(Question("In Overwatch, Tracer has exactly 40 bullets in her pistols.","This is true",True,2))
-questions.append(Question("In Stardew Valley, there are 30 bundles in the Community Centre","This is true",True,5))
-questions.append(Question("The highest competitive rank in CSGO is Gloabl Elite","This is true",True,1))
+questions.append(Question("In Stardew Valley, there are 30 bundles in the Community Centre.","This is true",True,5))
+questions.append(Question("The highest competitive rank in CSGO is Global Elite.","This is true",True,1))
 questions.append(Question("In ARK Survival Evolved, the biggest dinosaur is called 'Titanosaur'.","This is true",True,3))
 questions.append(Question("In Destiny 2, the three classes are Warlock, Hunter, and Titan.","This is true",True,4))
-questions.append(Question("In No Mans Sky, the starting galaxy is called Euclid","This is true",True,3))
+questions.append(Question("In No Mans Sky, the galaxy you start in is called Euclid.","This is true",True,3))
 
 #False answers
 questions.append(Question("The original Legend of Zelda game was released in 1989.","It was released in February 1986.",False,5))
-questions.append(Question("In Minecraft, there are 15 colours of wool","There are 16 colours of wool.",False,2))
+questions.append(Question("In Minecraft, there are 15 colours of wool.","There are 16 colours of wool.",False,2))
 questions.append(Question("In Apex Legends, Caustic can set up poison traps and electric fences.","Caustic can set up poison traps and throw a smoke grenade",False,3))
-questions.append(Question("League of Legends was published by Riot Entertainment","League of Legends was published by Riot Games.",False,3))
+questions.append(Question("League of Legends was published by Riot Entertainment.","League of Legends was published by Riot Games.",False,3))
 questions.append(Question("In Rainbow 6 Siege, the operator 'Jager' is an attacker.","Jager is a defender.",False,4))
 questions.append(Question("In Breath of the Wild, Hyrule Field was the first area to be made.","The Great Plateau was the first area to be made.",False,5))
 questions.append(Question("In Pac-Man, the cyan ghost is called Clyde.","The cyan ghost is called Inky, and the orange ghost is called Clyde.",False,4))
-questions.append(Question("The game of the year 2019 was Super Smash Bros.","The game of the year was Sekiro: Shadows Die Twice.",False,4))
+questions.append(Question("The game of the year 2019 was Resident Evil 2.","The game of the year was Sekiro: Shadows Die Twice.",False,4))
 
 
 
@@ -406,13 +406,10 @@ def leaderboard_screen():
 def controls_screen():
     background()
     text_loader(100,"Controls",64)
-    text_loader(200,"-=<( Movement )>=-",32)
-    text_loader(240,"Move Up: W / Up Button",32)
-    text_loader(280,"Move Down: S / Down Button",32)
-    text_loader(320,"Nove Left: A / Left Button",32)
-    text_loader(360,"Move Right: D / Right Button",32)
-    text_loader(460,"-=<( Other )>=-",32)
-    text_loader(540,"Exit Game: Esc Button",32)
+    text_loader(300,"Click: Left Mouse Button",32)
+    text_loader(340,"Type Username: Keyboard Buttons",32)
+    text_loader(380,"Type Capitalised Username: Hold Down Shift",32)
+    text_loader(420,"Exit Game: Esc Button",32)
 
     img(280,110,460,600,"Button-Back.png") #Loading back button
 
@@ -434,13 +431,13 @@ def about_screen():
     background()
     text_loader(100,"About the Game",64)
     text_loader(180,"In Spore Seeker, the aim of the game is to collect as",32)
-    text_loader(220,"many spores (points) as possible.",32)
-    text_loader(300,"The game ends after 10 levels.",32)
+    text_loader(220,"many spores (points) as possible by answering quiz questions.",32)
+    text_loader(300,"The game ends after you answer 10 questions.",32)
     text_loader(340,"Each level will present you with game related",32)
-    text_loader(380,"true-or-false quiz questions. Only the top 10 scores will be",32)
+    text_loader(380,"true-or-false quiz questions. The top 10 scores will be",32)
     text_loader(420,"displayed on the leaderboard, so only the most knowledgeable",32)
     text_loader(460,"players will be able to reach the top.",32)
-    text_loader(540,"Good luck, have fun, and don't die!",32)
+    text_loader(540,"GL HF!",32)
 
     #Loading back button
     img(280,110,460,600,"Button-Back.png")
@@ -462,12 +459,26 @@ def about_screen():
 def game():
     global points
 
+    chosen = [] #Making any empty array for previously used rand_num to be appended to
+
     for repeat in range(10):
         background()
         disp_points(points)
 
-        rand_num = random.randint(0,len(questions)-1)   #generating a random number between 0 and the last position in the array of objects
-        questions[rand_num].load()
+        counter = 0
+
+        rand_num = random.randint(0,len(questions)-1)   #Generating a random number between 0 and the last position in the array of objects
+
+        #Checking if the rand_num has been used before - if it has then a new rand_num will be made.
+        while counter < len(chosen) and len(chosen)>0:
+            if rand_num == chosen[counter]:                     #Checking if the rand_num has been previously chosen
+                counter = 0                                     #Restarting the search from the beginning
+                rand_num = random.randint(0,len(questions)-1)   #Rerolling the rand_num
+            else:
+                counter += 1        #Increaing the counter to look at the next item in the array
+
+        questions[rand_num].load()  #Loading the question
+        chosen.append(rand_num)     #Adding the rand_num to the array of previously used rand_num
 
         while True:
             quit_game()
