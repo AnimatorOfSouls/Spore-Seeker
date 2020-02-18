@@ -7,6 +7,7 @@ import sqlite3
 working_dir = path.dirname(__file__)
 
 ### CLASSES ###
+#The player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
@@ -14,11 +15,14 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect()
         self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/Player-Red.png")),(78,96))
 
+
+    #Used to change the player's sprite after they click a colour in the customisation menu
     def changeImage(self,image):
         self.image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+image)),(78,96))
 
 
 
+#The question class
 class Question:
     def __init__(self,question,answer,truefalse,difficulty):
         self.question = question
@@ -26,16 +30,20 @@ class Question:
         self.truefalse = truefalse
         self.difficulty = difficulty
 
+
     #Loads the screen
-    def load(self):
+    def load(self,i):
         #displays the question
-        text_loader(100,"Question Time!",64)
+        text_loader(100,"Question "+str(i+1),64)
         text_loader(300,self.question,32)
 
         #Display True and False buttons
         img(280,110,220,500,"Button-True.png")
         img(280,110,700,500,"Button-False.png")
+
+        #Display the player's sprite
         img(78,96,561,500,sprite)
+
 
     #Check if player gets the right answer
     def check_ans(self,points,player_ans):
@@ -50,6 +58,9 @@ class Question:
 
         pygame.time.wait(1500)
         return points
+
+
+    
 
 
 
@@ -71,7 +82,7 @@ def quit_game():
 
 
 
-#Loads and displays an image
+#Loads and displays an image [w = width] [h = height] [x and y = position of top left corner of image] [file = name of the file]
 def img(w,h,x,y,file):
     image = pygame.transform.scale(pygame.image.load(path.join(working_dir,"Sprites/"+file)),(w,h))
     screen.blit(image,(x,y))
@@ -167,11 +178,12 @@ def sql_linker():
     global username
     global points
 
+    #Connecting to database and creating a cursor to navigate the database
     conn = sqlite3.connect("Highscores.db")
     cursor = conn.cursor()
 
 
-    #Creating the table
+    #Creating the high scores table if it doesn't already exist
     conn.execute("CREATE TABLE IF NOT EXISTS highscores(id INTEGER PRIMARY KEY AUTOINCREMENT,username VARCHAR(15),score INT)")
 
 
@@ -179,14 +191,14 @@ def sql_linker():
     if username != "":
         sql = "INSERT INTO highscores (username,score) VALUES (?,?)"  #The SQL command to run
         val = (username,points)
-        cursor.execute(sql,val)  #Inserting the data
-        conn.commit()       #Saving the entry
+        cursor.execute(sql,val) #Inserting the data
+        conn.commit()           #Saving the entry
 
 
     #Importing database into the array
     cursor.execute("SELECT * FROM highscores")
     myresult = cursor.fetchall()
-    for row in myresult:
+    for row in myresult:    #appending each record (row) to the highscores array
         highscores.append(row[1:3])
 
 
@@ -208,6 +220,7 @@ def clear_data():
     points = 100
     username = ""
     highscores = []
+
 
 
 
@@ -241,7 +254,7 @@ questions.append(Question("The game of the year 2019 was Resident Evil 2.","The 
 
 
 ### Screens ###
-#The start screen with buttons leading to different "pages"
+#The start screen with buttons leading to different screens
 def start_screen():
     background()
 
@@ -405,6 +418,8 @@ def leaderboard_screen():
 #Shows all the controls
 def controls_screen():
     background()
+
+    #Displaying all the text
     text_loader(100,"Controls",64)
     text_loader(300,"Click: Left Mouse Button",32)
     text_loader(340,"Type Username: Keyboard Buttons",32)
@@ -429,6 +444,8 @@ def controls_screen():
 #A screen showing information about the game
 def about_screen():
     background()
+
+    #Displaying all the text
     text_loader(100,"About the Game",64)
     text_loader(180,"In Spore Seeker, the aim of the game is to collect as",32)
     text_loader(220,"many spores (points) as possible by answering quiz questions.",32)
@@ -464,12 +481,12 @@ def game():
     for repeat in range(10):
         background()
         disp_points(points)
-
         counter = 0
 
-        rand_num = random.randint(0,len(questions)-1)   #Generating a random number between 0 and the last position in the array of objects
 
-        #Checking if the rand_num has been used before - if it has then a new rand_num will be made.
+        rand_num = random.randint(0,len(questions)-1)   #Generating a random number between 0 and the last position in the array of objects
+        
+        #Checking if the rand_num has been used before - if it has then a new rand_num will be generated.
         while counter < len(chosen) and len(chosen)>0:
             if rand_num == chosen[counter]:                     #Checking if the rand_num has been previously chosen
                 counter = 0                                     #Restarting the search from the beginning
@@ -477,8 +494,10 @@ def game():
             else:
                 counter += 1        #Increaing the counter to look at the next item in the array
 
-        questions[rand_num].load()  #Loading the question
+
+        questions[rand_num].load(repeat)  #Loading the question
         chosen.append(rand_num)     #Adding the rand_num to the array of previously used rand_num
+
 
         while True:
             quit_game()
@@ -497,7 +516,7 @@ def game():
                 player_ans = False
                 break
 
-        points = questions[rand_num].check_ans(points,player_ans)
+        points = questions[rand_num].check_ans(points,player_ans)   #checking if the player's answer is correct and changing the points accordingly
 
     game_over()
 
@@ -509,9 +528,11 @@ def game_over():
     global points
     global username
 
+    #Displaying all the text
     text_loader(200,"Game Over!",64)
     text_loader(300,"Spores Collected: "+str(points),32)
-    text_loader(360,"Username:",32)
+    text_loader(360,"Please Enter Your Username:",32)
+    text_loader(450,"Use keyboard to enter letters/numbers.",32)
     text_loader(700,"Press Enter to Continue",32)
 
     #Defining the font + colour
@@ -537,7 +558,7 @@ def game_over():
 
             if key == "backspace":
                 username = username[:len(username) - 1]
-            elif event.key == pygame.K_RETURN:  #If the enter key is pressed, run a check and enter the username
+            elif event.key == pygame.K_RETURN:  #If the enter key is pressed, run validation
                 if len(username) > 15:
                     text_loader(600,"Your username is too long! (max 15 characters)",32)
                     pygame.time.wait(2000)
@@ -545,16 +566,17 @@ def game_over():
                     text_loader(600,"You must enter a username!",32)
                     pygame.time.wait(2000)
                 else:
-                    leaderboard_screen()
+                    leaderboard_screen()    #Enter the username if validation is passed
 
 
 
             background()
             text_loader(200,"Game Over!",64)
             text_loader(300,"Spores Collected: "+str(points),32)
-            text_loader(360,"Username:",32)
+            text_loader(360,"Please Enter Your Username:",32)
             text_loader(700,"Press Enter to Continue",32)
 
+            #Displaying the current username
             text = font.render(username, True, colour)
             text_rect = text.get_rect()
             text_rect.center = (600,450)
@@ -592,8 +614,5 @@ clear_data()
 
 ## Running the game
 start_screen()
-#game()
-#custom_screen()
-#leaderboard_screen()
-#about_screen()
-#game_over()
+
+
