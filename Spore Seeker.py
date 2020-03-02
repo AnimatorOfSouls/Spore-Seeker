@@ -148,8 +148,7 @@ def disp_points(points):
 
 
 #Insertion sort
-def insert_sort():
-    global highscores
+def insert_sort(highscores):
 
     tempstore = 0
     listpoint = 0
@@ -169,15 +168,13 @@ def insert_sort():
 
     #Reversing the table to be from highest to lowest
     highscores = highscores[::-1]
+    
+    return highscores
 
 
 
 #Read database into array
-def sql_linker():
-    global highscores
-    global username
-    global points
-
+def sql_linker(highscores,username,points):
     #Connecting to database and creating a cursor to navigate the database
     conn = sqlite3.connect("Highscores.db")
     cursor = conn.cursor()
@@ -203,23 +200,24 @@ def sql_linker():
 
 
     #Sorting the database
-    insert_sort()
+    highscores_sorted = insert_sort(highscores)
 
     #Closing the connections
     cursor.close()
     conn.close()
 
+    return highscores_sorted
+
 
 
 #Clearing previously stored data
-def clear_data():
-    global points
-    global username
-    global highscores
+def clear_data(highscores,username,points):
 
     points = 100
     username = ""
     highscores = []
+
+    return highscores,username,points
 
 
 
@@ -255,10 +253,10 @@ questions.append(Question("The game of the year 2019 was Resident Evil 2.","The 
 
 ### Screens ###
 #The start screen with buttons leading to different screens
-def start_screen():
+def start_screen(highscores,username,points):
     background()
 
-    clear_data()
+    highscores,username,points = clear_data(highscores,username,points)
 
     #Loading icon
     img(512,512,194,144,"Game-Icon-Text.png")
@@ -283,14 +281,13 @@ def start_screen():
 
         #Start game
         if 900+280>mouse[0]>900 and 20+110>mouse[1]>20 and click[0]==1:
-            clear_data()
-            game()
+            game(highscores,username,points)
         #Customisation menu
         if 900+280>mouse[0]>900 and 150+110>mouse[1]>150 and click[0]==1:
             custom_screen()
         #Leaderboard
         if 900+280>mouse[0]>900 and 280+110>mouse[1]>280 and click[0]==1:
-            leaderboard_screen()
+            leaderboard_screen(highscores,username,points)
         #Controls
         if 900+280>mouse[0]>900 and 410+110>mouse[1]>410 and click[0]==1:
             controls_screen()
@@ -347,7 +344,7 @@ def custom_screen():
         #Back button
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
             player.changeImage(sprite)
-            start_screen()
+            start_screen(highscores,username,points)
 
 
         #Red
@@ -366,9 +363,8 @@ def custom_screen():
 
 
 #The leaderboard screen with a highscores table and a button to return to the start screen
-def leaderboard_screen():
+def leaderboard_screen(highscores,username,points):
     background()
-    global highscores
 
     #Clearing highscores to prevent multiple views of leaderboard from adding to the same array
     highscores = []
@@ -379,7 +375,7 @@ def leaderboard_screen():
     img(280,110,460,600,"Button-Back.png")
 
     #Importing the sorted table
-    sql_linker()
+    highscores = sql_linker(highscores,username,points)
 
     #Displaying the headers for each column
     text_loader_pos(300,150,"Rank",36)
@@ -411,7 +407,7 @@ def leaderboard_screen():
 
         #Back button
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
-            start_screen()
+            start_screen(highscores,username,points)
 
 
 
@@ -437,7 +433,7 @@ def controls_screen():
 
         #Back button
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
-            start_screen()
+            start_screen(highscores,username,points)
 
 
 
@@ -468,13 +464,12 @@ def about_screen():
 
         #Back button
         if 460+280>mouse[0]>460 and 600+110>mouse[1]>600 and click[0]==1:
-            start_screen()
+            start_screen(highscores,username,points)
 
 
 
 #The main game
-def game():
-    global points
+def game(highscores,username,points):
 
     chosen = [] #Making any empty array for previously used rand_num to be appended to
 
@@ -518,15 +513,13 @@ def game():
 
         points = questions[rand_num].check_ans(points,player_ans)   #checking if the player's answer is correct and changing the points accordingly
 
-    game_over()
+    game_over(highscores,username,points)
 
 
 
 #Game over screen display number of points and asks for username
-def game_over():
+def game_over(highscores,username,points):
     background()
-    global points
-    global username
 
     #Displaying all the text
     text_loader(200,"Game Over!",64)
@@ -566,7 +559,7 @@ def game_over():
                     text_loader(600,"You must enter a username!",32)
                     pygame.time.wait(2000)
                 else:
-                    leaderboard_screen()    #Enter the username if validation is passed
+                    leaderboard_screen(highscores,username,points)    #Enter the username if validation is passed
 
 
 
@@ -609,10 +602,13 @@ player = Player()
 #Setting the default sprite colour
 sprite = "Player-Red.png"
 
-clear_data()
+#Setting up highscores, points, and username
+points = 100
+username = ""
+highscores = []
 
 
 ## Running the game
-start_screen()
+start_screen(highscores,username,points)
 
 
